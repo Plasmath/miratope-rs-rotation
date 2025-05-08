@@ -58,7 +58,8 @@ impl Plugin for WindowPlugin {
             .add_plugin(FacetingSettings::plugin())
             .add_plugin(RotateWindow::plugin())
             .add_plugin(PlaneWindow::plugin())
-            .add_plugin(TranslateWindow::plugin());
+            .add_plugin(TranslateWindow::plugin())
+	    .add_plugin(ReflectWindow::plugin());
     }
 }
 
@@ -2270,5 +2271,85 @@ impl UpdateWindow for TranslateWindow {
     fn update(&mut self, dim: usize) {
         self.rank = dim;
         self.mov = Point::zeros(dim);
+    }
+}
+
+// Reflection window
+pub struct ReflectWindow {
+    /// Whether the window is open
+    open: bool,
+
+    /// The rank of the polytope.
+    rank: usize,
+    
+    /// Normal vector of reflecting hyperplane.
+    normal: Point,
+}
+
+impl Default for ReflectWindow {
+    fn default() -> Self {
+        Self {
+            open: false,
+            rank: Default::default(),
+            normal: Point::zeros(0),
+        }
+    }
+}
+
+impl Window for ReflectWindow {
+    const NAME: &'static str = "Reflect about hyperplane";
+
+    fn is_open(&self) -> bool {
+        self.open
+    }
+
+    fn is_open_mut(&mut self) -> &mut bool {
+        &mut self.open
+    }
+}
+
+impl UpdateWindow for ReflectWindow {
+    fn action(&self, polytope: &mut Concrete) {
+        
+	if normal == Point::zeros(self.rank) {
+		println!("Cannot define a normal hyperplane from the zero vector.");
+	}
+	else {
+	    for v in polytope.vertices_mut() {
+		/// reflected v = v - 2 (v.n)/(n.n) * n
+		let projFactor = dot(&v,&n)/dot(&n,&n);
+
+		for i in 0..self.rank { //Perform reflection
+			v[i] = v[i] - projFactor * normal[i];
+		}
+            }
+        }
+        println!("Reflected!");
+	}
+    }
+
+    fn name_action(&self, name: &mut String) {
+        *name = format!("{}", name);
+    }
+    
+    fn build(&mut self, ui: &mut Ui) {
+        ui.add(PointWidget::new(&mut self.normal, "Normal vector of reflection hyperplane"));
+    }
+    
+    fn dim(&self) -> usize {
+        self.rank
+    }
+
+    fn default_with(dim: usize) -> Self {
+        Self {
+            rank: dim,
+            normal: Point::zeros(dim),
+            ..Default::default()
+        }
+    }
+
+    fn update(&mut self, dim: usize) {
+        self.rank = dim;
+        self.normal = Point::zeros(dim);
     }
 }

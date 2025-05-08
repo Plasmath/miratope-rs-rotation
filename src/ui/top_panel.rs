@@ -313,6 +313,7 @@ pub type EguiWindows<'a> = (
     ResMut<'a, RotateWindow>,
     ResMut<'a, PlaneWindow>,
     ResMut<'a, TranslateWindow>,
+    ResMut<'a, ReflectWindow>,
 );
 
 macro_rules! element_sort {
@@ -365,6 +366,7 @@ pub fn show_top_panel(
         mut rotate_window,
         mut plane_window,
         mut translate_window,
+	mut reflect_window,
     ): EguiWindows<'_>,
 ) {
     // The top bar.
@@ -581,6 +583,11 @@ pub fn show_top_panel(
                 //Rotates a polytope around the origin along a given plane intersecting the origin.
                 if ui.button("Rotate with plane...").clicked() {
                     plane_window.open();
+                }
+		
+		//Reflects a polytope about a hyperplane given by a normal vector.
+		if ui.button("Reflect about hyperplane...").clicked() {
+                    translate_window.open();
                 }
                 
             });
