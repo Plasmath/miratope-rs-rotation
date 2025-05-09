@@ -59,7 +59,7 @@ impl Plugin for WindowPlugin {
             .add_plugin(RotateWindow::plugin())
             .add_plugin(PlaneWindow::plugin())
             .add_plugin(TranslateWindow::plugin())
-	    .add_plugin(ReflectWindow::plugin());
+	        .add_plugin(ReflectWindow::plugin());
     }
 }
 
@@ -2310,22 +2310,30 @@ impl Window for ReflectWindow {
 
 impl UpdateWindow for ReflectWindow {
     fn action(&self, polytope: &mut Concrete) {
-        
-	if normal == Point::zeros(self.rank) {
-		println!("Cannot define a normal hyperplane from the zero vector.");
-	}
-	else {
-	    for v in polytope.vertices_mut() {
-		/// reflected v = v - 2 (v.n)/(n.n) * n
-		let projFactor = dot(&v,&n)/dot(&n,&n);
-
-		for i in 0..self.rank { //Perform reflection
-			v[i] = v[i] - projFactor * normal[i];
-		}
-            }
+        let mut nvec = Vec::new();
+        for i in 0..self.rank {
+            nvec.push( self.normal[i] );
         }
-        println!("Reflected!");
-	}
+        
+        if self.normal == Point::zeros(self.rank) {
+            println!("Cannot define a normal hyperplane from the zero vector.");
+        }
+        else {
+            for v in polytope.vertices_mut() {
+                let mut vvec = Vec::new();
+                for i in 0..self.rank {
+                    vvec.push( v[i] );
+                }
+
+                // reflected v = v - 2 (v.n)/(n.n) * n
+                let proj_factor = dot(&vvec,&nvec)/dot(&nvec,&nvec);
+
+                for i in 0..self.rank { //Perform reflection
+                    v[i] = v[i] - proj_factor * self.normal[i];
+                }
+            }
+            println!("Reflected!");
+        }
     }
 
     fn name_action(&self, name: &mut String) {

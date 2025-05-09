@@ -366,7 +366,7 @@ pub fn show_top_panel(
         mut rotate_window,
         mut plane_window,
         mut translate_window,
-	mut reflect_window,
+	    mut reflect_window,
     ): EguiWindows<'_>,
 ) {
     // The top bar.
@@ -585,9 +585,9 @@ pub fn show_top_panel(
                     plane_window.open();
                 }
 		
-		//Reflects a polytope about a hyperplane given by a normal vector.
-		if ui.button("Reflect about hyperplane...").clicked() {
-                    translate_window.open();
+		        //Reflects a polytope about a hyperplane given by a normal vector.
+		        if ui.button("Reflect about hyperplane...").clicked() {
+                    reflect_window.open(); 
                 }
                 
             });
